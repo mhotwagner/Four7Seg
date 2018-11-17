@@ -17,6 +17,7 @@ class Four7Seg
 		void swapDigitState();
 
 		void write(int value);
+		void write(float value);
 
 	private:
 		uint8_t _digitOffState = LOW;
@@ -36,8 +37,14 @@ class Four7Seg
 
 		void _writeDigit(int digitPin, int value);
 		void _writeDigit(int pin);
+		void _writeAllDigits();
 
+		// int _getDigitInFloat(int digit, float value, int significantDigits);
 		void _setValues(int value);
+		void _setValues(float value);
+		void _setValues(float value, int significantDigits);
+
+		
 };
 
 #endif

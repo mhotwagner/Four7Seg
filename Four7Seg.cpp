@@ -21,6 +21,19 @@ Four7Seg::Four7Seg(
 	pinMode(_clockPin, OUTPUT);
 	for (int i = 0; i < 4; i++) pinMode(_digitPins[i], OUTPUT);
 
+	Serial.begin(9600);
+	Serial.println("Initalized");
+
+}
+
+void Four7Seg::swapDigitState() {
+	if (_digitOffState == LOW) {
+		_digitOffState = HIGH;
+		_digitOnState = LOW;
+	} else {
+		_digitOffState = LOW;
+		_digitOnState = HIGH;
+	}
 }
 
 
@@ -49,6 +62,13 @@ void Four7Seg::_writeDigit(int pin) {
 	delay(_postWriteDelay);
 }
 
+void Four7Seg::_writeAllDigits() {
+	_writeDigit(_digitPins[0], _values[0]);
+	_writeDigit(_digitPins[1], _values[1]);
+	_writeDigit(_digitPins[2], _values[2]);
+	_writeDigit(_digitPins[3], _values[3]);
+}
+
 
 void Four7Seg::_setValues(int value) {
 	if (value / 1000 > 9) { // do we have too many digits?
@@ -68,21 +88,66 @@ void Four7Seg::_setValues(int value) {
 	}
 }
 
-
-void Four7Seg::swapDigitState() {
-	if (_digitOffState == LOW) {
-		_digitOffState = HIGH;
-		_digitOnState = LOW;
-	} else {
-		_digitOffState = LOW;
-		_digitOnState = HIGH;
-	}
-}
-
 void Four7Seg::write(int value) {
 	_setValues(value);
-	_writeDigit(_digitPins[0], _values[0]);
-	_writeDigit(_digitPins[1], _values[1]);
-	_writeDigit(_digitPins[2], _values[2]);
-	_writeDigit(_digitPins[3], _values[3]);
+	_writeAllDigits();
 }
+
+// int Four7Seg::_getDigitInFloat(int digit, float value, int significantDigits) {
+// 	pow(10, 4 - significantDigits - 1)
+// }
+
+void Four7Seg::_setValues(float value, int significantDigits) {
+	// Serial.println("set values");
+	if (value >= pow(10, 4 - significantDigits)) { // too many digits? too few?
+		memcpy(_values, _error, sizeof(_values)); // set values to error
+		return; //bail
+	}
+	// round away any extra sig digits	
+	float roundedValue = round(value * pow(10, significantDigits)) / pow(10, significantDigits);
+	String stringValue;
+	stringValue = String(roundedValue);
+
+
+	int decimalIndex = stringValue.indexOf(".");
+	int valueLength = stringValue.length() + (decimalIndex != -1 ? -1 : 0); // strip the decimal out of the length ... for some reason
+	// Serial.println(valueLength);
+	int i = 3; // which digit we're on
+	while (i > (valueLength - 1)) { // is it blank?
+		_values[i] = _blank;
+		i--;
+	}
+	// Serial.println(i);
+
+	// Serial.println(stringValue);
+	int stringPosition = stringValue.length();
+	while (i > -1) {
+		if (stringValue.charAt(stringPosition) != '.') {
+			int digitValue = stringValue.charAt(stringPosition) - '0';
+			_values[i] = _numbers[digitValue];
+			i--;
+		} else {
+			_values[i + 1] += 1; // add the decimal to the previous digit
+		}
+		stringPosition--;
+	}
+
+}
+
+void Four7Seg::_setValues(float value) {
+	// Serial.println("write digits");
+	_setValues(value, 2);
+	_writeAllDigits();
+}
+
+void Four7Seg::write(float value) {
+	// Serial.println("write");
+	_setValues(value);
+	_writeAllDigits();
+}
+
+
+
+
+
+
