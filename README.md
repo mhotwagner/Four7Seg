@@ -29,7 +29,7 @@ void setup() {
 
 void loop() {
   // This will write until n is greater than 4 digits
-  // (9999+1), and then it will write print an error message.
+  // (9999+1), and then it will print an error message.
   disp.write(n);
   n += 1;
 }
