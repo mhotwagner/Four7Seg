@@ -1,5 +1,5 @@
 ## Four7Seg
-An Arduino library for controlling a SH5461as 4-digit 7-segment module with a single 74HC595 shift register
+An Arduino library for controlling a SH5461as 4-digit 7-segment led module with a single 74HC595 shift register
 
 
 ## Quickstart
