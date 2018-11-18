@@ -21,18 +21,31 @@ class Four7Seg
 		void write(String value);
 
 	private:
+		// common anode v cathode hadnling
 		uint8_t _digitOffState = LOW;
 		uint8_t _digitOnState = HIGH;
-		int _postWriteDelay = 1;
+		int _postWriteDelay = 1; // we need a tiny delay to ensure each value actually display
 
 		int _dataPin, _clockPin, _latchPin;
 		int _digitPins[4];
 
+		// values read left to right, exactly as they'll display
+		// "hi" = ["", "", h", "i"]
+		// 916 = [0, 9, 1, 6]
 		int _values[4];
 
 		int _numbers[10] = { 252, 96, 218, 242, 102, 182, 190, 224, 254, 246 };
-		int _blank = 0;
+		int _blank = 0; 
 		int _error[4] = { 10, 10, 158, _blank };
+
+		// caching
+		int _STRING = 1;
+		int _FLOAT = 2;
+		int _INT = 3;
+		int _LAST_TYPE;
+		String _LAST_STRING;
+		float _LAST_FLOAT;
+		int _LAST_INT;
 
 		void _resetAllDigits();
 

@@ -14,7 +14,6 @@ Four7Seg::Four7Seg(
 	_digitPins[1] = digitPins[1];
 	_digitPins[2] = digitPins[2];
 	_digitPins[3] = digitPins[3];
-	// memcpy(_digitPins, digitPins, sizeof(_digitPins));
 
 	pinMode(_dataPin, OUTPUT);
 	pinMode(_latchPin, OUTPUT);
@@ -85,7 +84,7 @@ void Four7Seg::_setValues(int value) {
 }
 
 void Four7Seg::write(int value) {
-	_setValues(value);
+	if (!(_LAST_TYPE == _INT && _LAST_INT == value)) _setValues(value);
 	_writeAllDigits();
 }
 
@@ -130,12 +129,12 @@ void Four7Seg::_setValues(float value, int significantDigits) {
 
 void Four7Seg::_setValues(float value) {
 	_setValues(value, 2);
-	_writeAllDigits();
 }
 
 
 void Four7Seg::write(float value) {
-	_setValues(value);
+	if(!(_LAST_TYPE == _FLOAT && _LAST_FLOAT == value)) _setValues(value);
+	_LAST_TYPE = _FLOAT;
 	_writeAllDigits();
 }
 
@@ -157,13 +156,8 @@ void Four7Seg::_setValues(String value) {
 
 
 void Four7Seg::write(String value) {
-
-
-	// reverse the string, because we read from left to right
-	// char reversedChars[value.length()];
-	// for (int i = 0; i < value.length(); i++) reversedChars[i] = value[value.length() - 1 - i];
-
-	_setValues(value);
+	if (!(_LAST_TYPE == _STRING && _LAST_STRING == value)) _setValues(value);
+	_LAST_TYPE = _STRING;
 	_writeAllDigits();
 }
 
